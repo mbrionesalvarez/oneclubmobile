@@ -14,9 +14,26 @@ class WelcomeScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
         ),
+        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          Container(
+            color: HexColor("#174038"),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [Column(
+                children: [Text('ONE',
+                  style: TextStyle(color: HexColor('#FCE300'), fontWeight: FontWeight.w700, fontSize: 50, fontFamily: 'Arial'),)],
+              ), Column(
+                children: [Text('CLUB',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 50, fontFamily: 'Arial'),),],
+              )],),
+            padding: EdgeInsets.only(left: 40, right: 20, top: 20, bottom: 20),
+          ),
+          SizedBox(
+            height: 20,
+          ),
           InkWell(
             onTap: () {
               Navigator.push(context,
@@ -27,8 +44,7 @@ class WelcomeScreen extends StatelessWidget {
               child: Center(
                   child: Text(
                     'Login',
-                    style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 20),
                   )),
               height: 50,
               width: double.infinity,
@@ -47,8 +63,7 @@ class WelcomeScreen extends StatelessWidget {
               child: Center(
                   child: Text(
                     'Register',
-                    style:
-                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 20),
                   )),
               height: 50,
               width: double.infinity,

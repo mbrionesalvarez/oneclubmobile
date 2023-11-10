@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:oneclubmobile/network/network_helper.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -22,21 +23,30 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.white, fontWeight: FontWeight.bold),),
       ),
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("lib/static/images/IMG_3321-1.jpg"),
+            fit: BoxFit.cover,
+          ),
+        ),
         padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+
           children: [
-            TextField(
-              decoration: InputDecoration(hintText: 'email'),
+            TextFormField(
+              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 20),
+              decoration: InputDecoration(hintText: 'email', hintStyle: TextStyle(color: Colors.white),),
               onChanged: (value) {
                 setState(() {
                   username = value;
                 });
               },
             ),
-            TextField(
+            TextFormField(
               obscureText: true,
-              decoration: InputDecoration(hintText: 'Password'),
+              style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 20),
+              decoration: InputDecoration(hintText: 'password', hintStyle: TextStyle(color: Colors.white)),
               onChanged: (value) {
                 setState(() {
                   pass = value;
@@ -45,15 +55,20 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             InkWell(
               onTap: () async {
-                await HttpService.login(username, pass, context);
+                if (username == '') {
+                  EasyLoading.showError('Missing email');
+                } else if (pass == '') {
+                  EasyLoading.showError('Missing password');
+                } else {
+                  await HttpService.login(username, pass, context);
+                }
               },
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Center(
                     child: Text(
                       'Login',
-                      style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 20),
                     )),
                 height: 50,
                 width: double.infinity,
@@ -65,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
+
     );
   }
 }

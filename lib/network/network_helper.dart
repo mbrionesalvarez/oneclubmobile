@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:oneclubmobile/views/landing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:oneclubmobile/views/new_navbar.dart';
+import 'package:oneclubmobile/views/register.dart';
 
 
 
@@ -62,7 +63,7 @@ class HttpService {
         await prefs.setString("unit", json['unit']);
         await prefs.setString("color", json['color']);
         await prefs.setInt("playerProfileId", json['playerProfileId']);
-        await EasyLoading.showSuccess('Loading Data...');
+        await EasyLoading.show(status: 'Loading Data...');
         final uri = Uri.http('www.golfoneclub.com', '/api/user/refresh', {
           'email': user,
           'pwd': pwd,
@@ -70,6 +71,7 @@ class HttpService {
         print(uri);
         http.Response response = await http.get(uri);
         print(response.body);
+        EasyLoading.dismiss();
         if (response.statusCode == 200) {
           Navigator.pushReplacement(context,
               // MaterialPageRoute(builder: (context) => DashboardScreen())
@@ -85,25 +87,114 @@ class HttpService {
     }
   }
 
-  static register(username, email, pass, context) async {
-    http.Response response = await _client.post(_registerUrl, body: {
-      'uname': username,
-      'mail': email,
-      'passw': pass,
+  static register(email, pass, context) async {
+    var user = email;
+    var pwd = pass;
+    // Navigator.pushReplacement(context,
+    //     // MaterialPageRoute(builder: (context) => DashboardScreen())
+    //     MaterialPageRoute(builder: (context) => WelcomeRegisterScreen()));
+    await EasyLoading.show(status: 'Loading Data...');
+    final uri = Uri.http('www.golfoneclub.com', '/api/user/register', {
+      'email': user,
+      'pwd': pwd,
     });
+    http.Response response = await http.get(uri);
+    EasyLoading.dismiss();
+    debugPrint(response.body);
+    if (response.statusCode == 200) {
+      print(jsonDecode(response.body));
+      var json = jsonDecode(response.body);
+
+      if (json['error'] != 'Invalid username or password') {
+        await EasyLoading.showSuccess('User Registered');
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        SharedPreferences.setMockInitialValues({});
+        // await prefs.setString("name", json['name']);
+        await prefs.setString("email", email);
+        // await prefs.setString("unit", json['unit']);
+        // await prefs.setString("color", json['color']);
+        // await prefs.setInt("playerProfileId", json['playerProfileId']);
+        await prefs.setString("pwd", pwd);
+        Navigator.pushReplacement(context,
+            // MaterialPageRoute(builder: (context) => DashboardScreen())
+            MaterialPageRoute(builder: (context) => WelcomeRegisterScreen()));
+      } else {
+        await EasyLoading.showError(
+            "Error Code : ${response.statusCode.toString()}");
+      }
+      // http.Response response = await _client.post(_registerUrl, body: {
+      //   // 'uname': username,
+      //   'mail': email,
+      //   'passw': pass,
+      // });
+      //
+      // if (response.statusCode == 200) {
+      //   var json = jsonDecode(response.body);
+      //
+      //   if (json['status'] == 'username already exist') {
+      //     await EasyLoading.showError(json['status']);
+      //   } else {
+      //     await EasyLoading.showSuccess(json['status']);
+      //     Navigator.pushReplacement(context,
+      //         MaterialPageRoute(builder: (context) => MyAppFinal()));
+      //   }
+      // } else {
+      //   await EasyLoading.showError(
+      //       "Error Code : ${response.statusCode.toString()}");
+      // }
+    }
+  }
+  static import_data(unit, context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var user = prefs.getString('email');
+    var pwd = prefs.getString('pwd');
+    await EasyLoading.show(status: 'Loading Data...');
+    final uri = Uri.http('www.golfoneclub.com', '/api/user/import', {
+      'email': user,
+      'pwd': pwd,
+      'unit': unit
+    });
+    http.Response response = await http.get(uri);
+    debugPrint(response.body);
 
     if (response.statusCode == 200) {
-      var json = jsonDecode(response.body);
-      if (json['status'] == 'username already exist') {
-        await EasyLoading.showError(json['status']);
+      final uri = Uri.http('www.golfoneclub.com', '/api/user/login', {
+        'email': user,
+        'pwd': pwd,
+      });
+      http.Response response = await http.get(uri);
+      debugPrint(response.body);
+      if (response.statusCode == 200) {
+        print(jsonDecode(response.body));
+        var json = jsonDecode(response.body);
+
+        if (json['error'] != 'Invalid username or password') {
+          // await EasyLoading.showSuccess('Login Sucessfully');
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          SharedPreferences.setMockInitialValues({});
+          await prefs.setString("name", json['name']);
+          await prefs.setString("email", json['email']);
+          await prefs.setString("unit", json['unit']);
+          await prefs.setString("color", json['color']);
+          await prefs.setInt("playerProfileId", json['playerProfileId']);
+          EasyLoading.dismiss();
+
+          Navigator.pushReplacement(context,
+                // MaterialPageRoute(builder: (context) => DashboardScreen())
+                MaterialPageRoute(builder: (context) => MyAppFinal())
+            );
+
+        } else {
+          EasyLoading.showError(json['error']);
+        }
       } else {
-        await EasyLoading.showSuccess(json['status']);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => MyAppFinal()));
+        await EasyLoading.showError(
+            "Error Code : ${response.statusCode.toString()}");
       }
     } else {
       await EasyLoading.showError(
           "Error Code : ${response.statusCode.toString()}");
     }
   }
+
 }

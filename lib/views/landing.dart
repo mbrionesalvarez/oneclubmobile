@@ -996,6 +996,9 @@ class _LatestActivitiesCards extends State<LatestActivitiesCards> {
     print(uri);
     http.Response response = await http.get(uri);
     print(response.body);
+    if (json.decode(response.body)['error'] == "No friends") {
+      return 'No friends';
+    }
     // // print('Pepi');
     // // List<CardModel> tempdata = cardModelFromJson(response.body);
     // // jsonDataGridSource = _JsonDataGridSource(tempdata);
@@ -1037,58 +1040,81 @@ class _LatestActivitiesCards extends State<LatestActivitiesCards> {
     return FutureBuilder(
         future: getDataTour(),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          print(snapshot.hasData);
+          print(snapshot.data);
           print(fields);
-          return snapshot.hasData
-              ? SfDataGrid(
+          if (snapshot.data == 'No friends') {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.person,
+                    color: Colors.black12,
+                    size: 110,
+                  ),
+                  Text(
+                    'Follow friends to see their scorecards',
+                    style: TextStyle(
+                      color: Colors.black12,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+            );
+          } else {
+            return snapshot.hasData
+                ? SfDataGrid(
+              // return SfDataGrid(
+              // rowHeight: 80,
+                source: jsonDataGridSourceLatestActivitiesCards,
+                columns: fields.map((e) {
+                  if (e == 'Course Name') {
+                    return GridColumn(
+                      columnName: e.toString(),
+                      width: 200,
+                      label: Container(
+                        padding: EdgeInsets.all(8),
+                        alignment: Alignment.center,
+                        color: HexColor("#009B77"),
+                        child: Text(
+                          e.toString(),
+                          overflow: TextOverflow.clip,
+                          softWrap: true,
+                        ),
+                      ),
+                    );
+                  } else {
+                    return GridColumn(
+                      columnName: e.toString(),
+                      width: 100,
+                      label: Container(
+                        padding: EdgeInsets.all(8),
+                        alignment: Alignment.center,
+                        color: HexColor("#009B77"),
+                        child: Text(
+                          e.toString(),
+                          overflow: TextOverflow.clip,
+                          softWrap: true,
+                        ),
+                      ),
+                    );
+                  }
+                }).toList()
+              // getColumns()
+            )
+                : Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+              ),
+              // child: Text('Pollon'),
+            );
             // return SfDataGrid(
-            // rowHeight: 80,
-              source: jsonDataGridSourceLatestActivitiesCards,
-              columns: fields.map((e) {
-                if (e == 'Course Name') {
-                  return GridColumn(
-                    columnName: e.toString(),
-                    width: 200,
-                    label: Container(
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      color: HexColor("#009B77"),
-                      child: Text(
-                        e.toString(),
-                        overflow: TextOverflow.clip,
-                        softWrap: true,
-                      ),
-                    ),
-                  );
-                } else {
-                  return GridColumn(
-                    columnName: e.toString(),
-                    width: 100,
-                    label: Container(
-                      padding: EdgeInsets.all(8),
-                      alignment: Alignment.center,
-                      color: HexColor("#009B77"),
-                      child: Text(
-                        e.toString(),
-                        overflow: TextOverflow.clip,
-                        softWrap: true,
-                      ),
-                    ),
-                  );
-                }
-              }).toList()
-            // getColumns()
-          )
-              : Center(
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-            ),
-            // child: Text('Pollon'),
-          );
-          // return SfDataGrid(
-          //     source: jsonDataGridSource,
-          //     columns: getColumns()
-          // );
+            //     source: jsonDataGridSource,
+            //     columns: getColumns()
+            // );
+          }
         });
   }
 }

@@ -549,7 +549,20 @@ class _HomeFeedsState extends State<HomeFeeds> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Feeds'),
+        title: Container(
+          // color: HexColor("#174038"),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [Column(
+              children: [Text('ONE',
+                style: TextStyle(color: HexColor('#FCE300'), fontWeight: FontWeight.w700, fontSize: 30, fontFamily: 'Arial'),)],
+            ), Column(
+              children: [Text('CLUB',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 30, fontFamily: 'Arial'),),],
+            )],),
+          // padding: EdgeInsets.only(left: 40, right: 20, top: 20, bottom: 20),
+        ),
+        centerTitle: true,
       ),
       body: DashboardScreen(),
       // ListView.builder(
